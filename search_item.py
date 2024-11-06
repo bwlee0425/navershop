@@ -16,15 +16,17 @@ def search_products(query):
     if response.status_code == 200:
         return response.json()  # JSON 형식으로 데이터 반환
     else:
-        print(f"Error: {response.status_code}")
-        return None
+        return {"error": f"Error: {response.status_code}"}
 
-def display_products(products):
-    if products:
+def format_products(products):
+    results = []
+    if products and 'items' in products:
         for item in products['items']:
-            print(f"상품명: {item['title']}, 가격: {item['lprice']}원")
-
-if __name__ == "__main__":
-    query = input("검색할 상품명을 입력하세요: ")
-    products = search_products(query)
-    display_products(products)
+            results.append({
+                "상품명": item['title'],
+                "가격": f"{item['lprice']}원",
+                "이미지 URL": item['image']  # 이미지 URL 추가
+            })
+    else:
+        results.append({"message": "검색 결과가 없습니다."})
+    return results
